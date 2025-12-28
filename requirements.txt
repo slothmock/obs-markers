@@ -1,0 +1,3 @@
+appdirs
+keyboard
+obsws_python

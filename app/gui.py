@@ -1,0 +1,111 @@
+from time import time
+import tkinter as tk
+from tkinter import ttk, filedialog, messagebox
+
+
+class MarkerGUI:
+    def __init__(self, app):
+        self.app = app
+        self.app.on_state_change = self.refresh
+
+        self.root = tk.Tk()
+        self.root.title("OBS Markers")
+        self.root.geometry("580x180")
+
+        self.menu = tk.Menu(self.root)
+        self.root.config(menu=self.menu)
+
+        self._build_file_menu()
+        self._build_about_menu()
+
+        self.status_var = tk.StringVar()
+        self.dir_var = tk.StringVar()
+        self.file_var = tk.StringVar()
+        self.time_var = tk.StringVar()
+        self.count_var = tk.StringVar()
+
+        ttk.Label(self.root, textvariable=self.status_var).pack(anchor="w", padx=8)
+        ttk.Label(self.root, textvariable=self.dir_var).pack(anchor="w", padx=8)
+        ttk.Label(self.root, textvariable=self.file_var).pack(anchor="w", padx=8)
+        ttk.Label(self.root, textvariable=self.time_var).pack(anchor="w", padx=8)
+        ttk.Label(self.root, textvariable=self.count_var).pack(anchor="w", padx=8)
+
+        ttk.Button(
+            self.root,
+            text="New Marker File (New Session)",
+            command=self.new_marker_file
+        ).pack(fill="x", padx=8, pady=2)
+
+        ttk.Button(
+            self.root,
+            text="Add Marker (F8)",
+            command=self.app.add_marker
+        ).pack(fill="x", padx=8, pady=(6, 2))
+
+
+        self.refresh()
+        self.tick()
+
+    # ---------------- Menu ----------------
+    def _build_file_menu(self):
+        file_menu = tk.Menu(self.menu, tearoff=0)
+        file_menu.add_command(label="Select New Folder", command=self.select_directory)
+        file_menu.add_separator()
+        file_menu.add_command(label="Quit", command=self.root.quit)
+        self.menu.add_cascade(label="File", menu=file_menu)
+
+    def _build_about_menu(self):
+        about_menu = tk.Menu(self.menu, tearoff=0)
+        about_menu.add_command(label="About", command=self.show_about)
+        self.menu.add_cascade(label="About", menu=about_menu)
+
+    # ---------- UI actions ----------
+    def select_directory(self):
+        directory = filedialog.askdirectory(
+            title="Select Marker Folder"
+        )
+        if directory:
+            self.app.set_marker_directory(directory)
+
+    def new_marker_file(self):
+        if self.app.markers.base_dir:
+            self.app.markers.new_file()
+            self.refresh()
+
+    def show_about(self):
+        messagebox.showinfo("About OBS Markers",
+                            "OBS Markers v1.0\n\n"
+                            "Author: Jordan 'sloth' Mock\n"
+                            "Logs markers while recording/streaming with OBS\n"
+                            "Website: github.com/slothmock/obs-markers")       
+
+    # ---------- UI refresh ----------
+    def refresh(self):
+        status = "● RECORDING" if self.app.session_active else "○ IDLE"
+        self.status_var.set(f"Status: {status}")
+
+        self.dir_var.set(
+            f"Folder: {self.app.markers.base_dir or '—'}"
+        )
+
+        self.file_var.set(
+            f"File: {self.app.markers.current_filename or '—'}"
+        )
+
+        self.count_var.set(
+            f"Markers: {self.app.marker_count}"
+        )
+
+    def tick(self):
+        if self.app.session_active and self.app.start_time:
+            elapsed = int(time() * 1000) - self.app.start_time
+            self.time_var.set(
+                f"Duration: {self.app.format_elapsed(elapsed)}"
+            )
+        else:
+            self.time_var.set("Duration: 00:00:00")
+
+        self.root.after(500, self.tick)
+
+    def run(self):
+        self.root.mainloop()

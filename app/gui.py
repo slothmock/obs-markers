@@ -2,7 +2,7 @@ from time import time
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 
-from metadata import APP_INFO
+from app.metadata import APP_INFO
 
 
 class MarkerGUI:

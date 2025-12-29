@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+version_scheme = "release-branch-semver"
+local_scheme = "no-local-version"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[project]
+name = "obs-markers"
+dynamic = ["version"]
+description = "Log timestamp markers while recording in OBS"
+authors = [{ name = "slothmock" }]
+readme = "README.md"
+license = { text = "MIT" }

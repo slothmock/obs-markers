@@ -2,6 +2,8 @@ from time import time
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 
+from metadata import APP_INFO
+
 
 class MarkerGUI:
     def __init__(self, app):
@@ -9,7 +11,7 @@ class MarkerGUI:
         self.app.on_state_change = self.refresh
 
         self.root = tk.Tk()
-        self.root.title("OBS Markers")
+        self.root.title(f"{APP_INFO.name} v{APP_INFO.version}")
         self.root.geometry("580x180")
 
         self.menu = tk.Menu(self.root)
@@ -68,16 +70,21 @@ class MarkerGUI:
             self.app.set_marker_directory(directory)
 
     def new_marker_file(self):
+        if self.app.session_active:
+            messagebox.showwarning("Recording Active!",
+                           "Stop recording before starting a new marker file.")
+            return
+
         if self.app.markers.base_dir:
             self.app.markers.new_file()
             self.refresh()
 
     def show_about(self):
         messagebox.showinfo("About OBS Markers",
-                            "OBS Markers v1.0\n\n"
-                            "Author: Jordan 'sloth' Mock\n"
-                            "Logs markers while recording/streaming with OBS\n"
-                            "Website: github.com/slothmock/obs-markers")       
+                            f"{APP_INFO.name} v{APP_INFO.version}\n\n"
+                            f"{APP_INFO.description}\n"
+                            f"Author: {APP_INFO.author}\n"
+                            f"Website: {APP_INFO.repo_url}")       
 
     # ---------- UI refresh ----------
     def refresh(self):

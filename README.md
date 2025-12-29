@@ -1,4 +1,7 @@
-# OBS Markers
+# OBS Markers  
+    
+    This project is under active development. Breaking changes may occur before v1.0.
+  
 
 **OBS Markers** is a lightweight utility for logging markers while recording with OBS Studio. It automatically tracks recording sessions, writes timestamps to marker files, and provides a simple GUI. Ideal for streamers, content creators, or anyone needing precise marker tracking.
 

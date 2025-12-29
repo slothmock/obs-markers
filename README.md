@@ -1,4 +1,8 @@
-# OBS Markers ![Version](https://img.shields.io/badge/version-0.1.0-blue) ![Python](https://img.shields.io/badge/python-3.11+-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+# OBS Markers 
+![Version](https://img.shields.io/badge/version-0.1.0-blue) ![Python](https://img.shields.io/badge/python-3.11+-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+
+![OBS Markers GUI](docs/gui.png)
+
 
 **OBS Markers** is a lightweight utility for logging timestamp markers while recording with [OBS Studio](https://obsproject.com/). Works with any OBS-supported recording format, automatically tracks recording sessions, writes timestamps to marker files, and provides a simple GUI. 
 

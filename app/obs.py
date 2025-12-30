@@ -6,7 +6,6 @@ class OBSConnectionState(Enum):
     DISCONNECTED = auto()
     CONNECTING = auto()
     CONNECTED = auto()
-    ERROR = auto()
 
 
 class OBSClient:

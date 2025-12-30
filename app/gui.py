@@ -46,8 +46,12 @@ class MarkerGUI:
             command=self.app.add_marker
         ).pack(fill="x", padx=8, pady=(6, 2))
 
-        ttk.Label(self.root, textvariable=self.obs_status_var).pack(anchor="e", padx=8, pady=8)
-
+        self.obs_status_label = tk.Label(
+            self.root,
+            textvariable=self.obs_status_var,
+            anchor="w"
+        )
+        self.obs_status_label.pack(anchor="w", padx=8)
 
         self.refresh()
         self.tick()
@@ -96,10 +100,13 @@ class MarkerGUI:
 
         if state == OBSConnectionState.CONNECTED:
             self.obs_status_var.set("OBS: Connected")
+            self.obs_status_label.config(fg="green")
         elif state == OBSConnectionState.CONNECTING:
             self.obs_status_var.set("OBS: Connecting…")
+            self.obs_status_label.config(fg="orange")
         else:
             self.obs_status_var.set("OBS: Not running")
+            self.obs_status_label.config(fg="red")
 
 
         status = "● RECORDING" if self.app.session_active else "○ IDLE"

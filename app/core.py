@@ -1,65 +1,30 @@
-import sys, time, logging
+import time
 
-import obsws_python as obs
+from app.obs import OBSClient
 from app.markers import MarkerFileManager
 from app.config import load_config, save_config
 
 
 class MarkerApp:
-    def __init__(self):
-        # Config
+    def __init__(self, logger):
+        self.logger = logger
         self.config = load_config()
-        self.logger = logging.getLogger("OBSMarkers")
 
-        self.logger.info("OBS Markers initializing")
-
-        try:
-            self.req_client = obs.ReqClient(host='localhost', port=4455)
-            self.logger.debug("OBS ReqClient created")
-        except Exception as e:
-            self.logger.critical(
-                "Failed to create OBS request client",
-                exc_info=e
-            )
-            sys.exit(1)
-
-        try:
-            stats = self.req_client.get_stats()
-            self.logger.info(
-                "OBS connected | CPU %.2f%% | Memory %.2f MB",
-                stats.cpu_usage,
-                stats.memory_usage
-            )
-        except Exception as e:
-            self.logger.critical(
-                "OBS did not respond to initial health check",
-                exc_info=e
-            )
-            sys.exit(1)
+        self.obs = OBSClient(logger)
 
         self.session_active = False
         self.start_time = None
         self.marker_count = 0
 
-        # Marker manager
         self.markers = MarkerFileManager()
 
-        # Load last-used folder if available
         last_folder = self.config.get("markers", {}).get("last_folder")
         if last_folder:
             try:
                 self.set_marker_directory(last_folder)
-                self.logger.info(
-                    "Loaded last marker directory: %s",
-                    last_folder
-                )
-            except Exception as e:
-                self.logger.warning(
-                    "Failed to restore last marker directory",
-                    exc_info=e
-                )
+            except Exception:
+                self.logger.exception("Failed to restore marker folder")
 
-        # Callback for GUI updates
         self.on_state_change = None
 
     # ---------------- Marker directory ----------------
@@ -76,23 +41,22 @@ class MarkerApp:
         self._notify()
 
     # ---------------- OBS polling ----------------
-    def poll(self, interval=1.0):
-        try:
-            status = self.req_client.get_record_status()
+    def poll(self):
+        if not self.obs.is_connected():
+            self.obs.connect()
+            self._notify()
+            return
 
-            if status.output_active and not self.session_active:
-                self.logger.info("Recording started")
-                self._start_session()
+        status = self.obs.call(self.obs.client.get_record_status)
+        if not status:
+            self._notify()
+            return
 
-            elif not status.output_active and self.session_active:
-                self.logger.info("Recording stopped")
-                self._end_session()
+        if status.output_active and not self.session_active:
+            self._start_session()
+        elif not status.output_active and self.session_active:
+            self._end_session()
 
-        except Exception as e:
-            self.logger.warning(
-                "Failed to poll OBS",
-                exc_info=e
-            )
 
     # ---------------- Session handlers ----------------
     def _start_session(self):

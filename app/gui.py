@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 
 from app.metadata import APP_INFO
+from app.obs import OBSConnectionState
 
 
 class MarkerGUI:
@@ -12,7 +13,7 @@ class MarkerGUI:
 
         self.root = tk.Tk()
         self.root.title(f"{APP_INFO.name} v{APP_INFO.version}")
-        self.root.geometry("580x180")
+        self.root.geometry("580x200")
 
         self.menu = tk.Menu(self.root)
         self.root.config(menu=self.menu)
@@ -20,13 +21,14 @@ class MarkerGUI:
         self._build_file_menu()
         self._build_about_menu()
 
-        self.status_var = tk.StringVar()
+        self.record_status_var = tk.StringVar()
+        self.obs_status_var = tk.StringVar()
         self.dir_var = tk.StringVar()
         self.file_var = tk.StringVar()
         self.time_var = tk.StringVar()
         self.count_var = tk.StringVar()
 
-        ttk.Label(self.root, textvariable=self.status_var).pack(anchor="w", padx=8)
+        ttk.Label(self.root, textvariable=self.record_status_var).pack(anchor="w", padx=8)
         ttk.Label(self.root, textvariable=self.dir_var).pack(anchor="w", padx=8)
         ttk.Label(self.root, textvariable=self.file_var).pack(anchor="w", padx=8)
         ttk.Label(self.root, textvariable=self.time_var).pack(anchor="w", padx=8)
@@ -43,6 +45,8 @@ class MarkerGUI:
             text="Add Marker (F8)",
             command=self.app.add_marker
         ).pack(fill="x", padx=8, pady=(6, 2))
+
+        ttk.Label(self.root, textvariable=self.obs_status_var).pack(anchor="e", padx=8, pady=8)
 
 
         self.refresh()
@@ -88,8 +92,18 @@ class MarkerGUI:
 
     # ---------- UI refresh ----------
     def refresh(self):
+        state = self.app.obs.state
+
+        if state == OBSConnectionState.CONNECTED:
+            self.obs_status_var.set("OBS: Connected")
+        elif state == OBSConnectionState.CONNECTING:
+            self.obs_status_var.set("OBS: Connecting…")
+        else:
+            self.obs_status_var.set("OBS: Not running")
+
+
         status = "● RECORDING" if self.app.session_active else "○ IDLE"
-        self.status_var.set(f"Status: {status}")
+        self.record_status_var.set(f"Status: {status}")
 
         self.dir_var.set(
             f"Folder: {self.app.markers.base_dir or '—'}"

@@ -7,7 +7,7 @@ from app.hotkeys import Hotkeys
 
 logger = setup_logging(debug=True)
 
-app = MarkerApp()
+app = MarkerApp(logger=logger)
 Hotkeys(app)
 
 def poll_loop():

@@ -1,5 +1,5 @@
-import sys
-import time
+import sys, time, logging
+
 import obsws_python as obs
 from app.markers import MarkerFileManager
 from app.config import load_config, save_config
@@ -9,24 +9,34 @@ class MarkerApp:
     def __init__(self):
         # Config
         self.config = load_config()
+        self.logger = logging.getLogger("OBSMarkers")
 
-        # OBS ReqClient
+        self.logger.info("OBS Markers initializing")
+
         try:
             self.req_client = obs.ReqClient(host='localhost', port=4455)
+            self.logger.debug("OBS ReqClient created")
         except Exception as e:
-            print(f"[ERROR] Failed to create OBS request client: {e}", flush=True)
+            self.logger.critical(
+                "Failed to create OBS request client",
+                exc_info=e
+            )
             sys.exit(1)
 
-        # Fail-fast check
         try:
             stats = self.req_client.get_stats()
-            print(f"[INFO] OBS connected. CPU {stats.cpu_usage:.2f}%, Memory {stats.memory_usage:.2f} MB", flush=True)
+            self.logger.info(
+                "OBS connected | CPU %.2f%% | Memory %.2f MB",
+                stats.cpu_usage,
+                stats.memory_usage
+            )
         except Exception as e:
-            print("[ERROR] OBS did not respond.", flush=True)
-            print(e, flush=True)
+            self.logger.critical(
+                "OBS did not respond to initial health check",
+                exc_info=e
+            )
             sys.exit(1)
 
-        # Session state
         self.session_active = False
         self.start_time = None
         self.marker_count = 0
@@ -39,8 +49,15 @@ class MarkerApp:
         if last_folder:
             try:
                 self.set_marker_directory(last_folder)
-            except Exception:
-                pass
+                self.logger.info(
+                    "Loaded last marker directory: %s",
+                    last_folder
+                )
+            except Exception as e:
+                self.logger.warning(
+                    "Failed to restore last marker directory",
+                    exc_info=e
+                )
 
         # Callback for GUI updates
         self.on_state_change = None
@@ -48,45 +65,81 @@ class MarkerApp:
     # ---------------- Marker directory ----------------
     def set_marker_directory(self, directory: str):
         self.markers.set_base_dir(directory)
-        self.markers.new_file()
-        # Save to config
+        path = self.markers.new_file()
+
         self.config.setdefault("markers", {})["last_folder"] = directory
         save_config(self.config)
+
+        self.logger.info("Marker directory set: %s", directory)
+        self.logger.debug("New marker file created: %s", path)
+
         self._notify()
 
     # ---------------- OBS polling ----------------
     def poll(self, interval=1.0):
         try:
             status = self.req_client.get_record_status()
+
             if status.output_active and not self.session_active:
+                self.logger.info("Recording started")
                 self._start_session()
+
             elif not status.output_active and self.session_active:
+                self.logger.info("Recording stopped")
                 self._end_session()
+
         except Exception as e:
-            print(f"[WARN] Failed to poll OBS: {e}", flush=True)
+            self.logger.warning(
+                "Failed to poll OBS",
+                exc_info=e
+            )
 
     # ---------------- Session handlers ----------------
     def _start_session(self):
         self.session_active = True
         self.start_time = int(time.time() * 1000)
         self.marker_count = 0
+
         self.markers.session_start()
+        self.logger.info("Marker session started")
+        
         self._notify()
 
     def _end_session(self):
         elapsed = int(time.time() * 1000) - self.start_time
-        self.markers.session_end(self.format_elapsed(elapsed))
+        duration = self.format_elapsed(elapsed)
+
+        self.markers.session_end(duration)
         self.session_active = False
+
+        self.logger.info(
+            "Marker session ended | Duration %s | Markers %d",
+            duration,
+            self.marker_count
+        )
+
         self._notify()
 
     # ---------------- Marker ----------------
     def add_marker(self):
         if not self.session_active:
-            print("[WARN] Not recording. Marker not added.", flush=True)
+            self.logger.warning(
+                "Marker ignored: recording not active"
+            )
             return
+
         elapsed = int(time.time() * 1000) - self.start_time
-        self.markers.write(self.format_elapsed(elapsed))
+        timestamp = self.format_elapsed(elapsed)
+
+        self.markers.write(timestamp)
         self.marker_count += 1
+
+        self.logger.debug(
+            "Marker added at %s (count=%d)",
+            timestamp,
+            self.marker_count
+        )
+
         self._notify()
 
     # ---------------- Utils ----------------

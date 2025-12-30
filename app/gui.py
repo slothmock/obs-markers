@@ -9,11 +9,11 @@ from app.obs import OBSConnectionState
 class MarkerGUI:
     def __init__(self, app):
         self.app = app
-        self.app.on_state_change = self.refresh
+        self.app.on_state_change = self.schedule_refresh
 
         self.root = tk.Tk()
         self.root.title(f"{APP_INFO.name} v{APP_INFO.version}")
-        self.root.geometry("580x200")
+        self.root.geometry("580x180")
 
         self.menu = tk.Menu(self.root)
         self.root.config(menu=self.menu)
@@ -51,7 +51,7 @@ class MarkerGUI:
             textvariable=self.obs_status_var,
             anchor="w"
         )
-        self.obs_status_label.pack(anchor="w", padx=8)
+        self.obs_status_label.pack(anchor="e", padx=8)
 
         self.refresh()
         self.tick()
@@ -95,17 +95,20 @@ class MarkerGUI:
                             f"Website: {APP_INFO.repo_url}")       
 
     # ---------- UI refresh ----------
+    def schedule_refresh(self):
+         self.root.after(0, self.refresh)
+
     def refresh(self):
         state = self.app.obs.state
 
         if state == OBSConnectionState.CONNECTED:
-            self.obs_status_var.set("OBS: Connected")
+            self.obs_status_var.set("● OBS Connected")
             self.obs_status_label.config(fg="green")
         elif state == OBSConnectionState.CONNECTING:
-            self.obs_status_var.set("OBS: Connecting…")
+            self.obs_status_var.set("◐ OBS Connecting…")
             self.obs_status_label.config(fg="orange")
         else:
-            self.obs_status_var.set("OBS: Not running")
+            self.obs_status_var.set("○ OBS Not running")
             self.obs_status_label.config(fg="red")
 
 

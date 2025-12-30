@@ -8,6 +8,8 @@ from app.config import load_config, save_config
 class MarkerApp:
     def __init__(self, logger):
         self.logger = logger
+        self.on_state_change = None
+
         self.config = load_config()
 
         self.obs = OBSClient(logger)
@@ -25,7 +27,6 @@ class MarkerApp:
             except Exception:
                 self.logger.exception("Failed to restore marker folder")
 
-        self.on_state_change = None
 
     # ---------------- Marker directory ----------------
     def set_marker_directory(self, directory: str):
@@ -115,6 +116,9 @@ class MarkerApp:
         s = total_seconds % 60
         return f"{h:02}:{m:02}:{s:02}"
 
+
     def _notify(self):
-        if self.on_state_change:
-            self.on_state_change()
+        callback = getattr(self, "on_state_change", None)
+        if callback:
+            callback()
+

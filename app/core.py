@@ -48,8 +48,16 @@ class MarkerApp:
             self._notify()
             return
 
-        status = self.obs.call(self.obs.client.get_record_status)
-        if not status:
+        try:
+            status = self.obs.call(self.obs.client.get_record_status)
+        except Exception as e:
+            self.logger.warning("OBS poll failed", exc_info=e)
+            self.obs.mark_disconnected(str(e))
+            self._notify()
+            return
+
+        if status is None:
+            self.logger.debug("OBS not ready yet")
             self._notify()
             return
 
@@ -57,6 +65,7 @@ class MarkerApp:
             self._start_session()
         elif not status.output_active and self.session_active:
             self._end_session()
+
 
 
     # ---------------- Session handlers ----------------

@@ -47,18 +47,23 @@ class OBSClient:
     def is_connected(self) -> bool:
         return self.state == OBSConnectionState.CONNECTED
     
-    
     def call(self, fn, *args, **kwargs):
         if not self.is_connected():
             self.connect()
             return None
-
+        
         try:
             return fn(*args, **kwargs)
+        except obs.reqs.OBSSDKRequestError as e:
+            if e.code == 207:
+                self.logger.debug("OBS not ready (207)")
+                self.state = OBSConnectionState.CONNECTING
+                return None
         except Exception as e:
             self.logger.warning("Lost OBS connection", exc_info=e)
             self.client = None
             self.state = OBSConnectionState.DISCONNECTED
             self.last_error = str(e)
             return None
+            
 

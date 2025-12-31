@@ -1,5 +1,5 @@
 # OBS Markers 
-![Version](https://img.shields.io/badge/version-0.1.0-blue) ![Python](https://img.shields.io/badge/python-3.11+-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+![Version](https://img.shields.io/badge/version-0.2.0-blue) ![Python](https://img.shields.io/badge/python-3.11+-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
 ![OBS Markers GUI](docs/gui.png)
 
@@ -61,7 +61,7 @@ python -m app
 ```
 
 * First launch will prompt you to select a folder for marker files
-* The GUI displays recording status, marker file, elapsed time, and marker count
+* The GUI displays OBS connection status, recording status, marker file, elapsed time, and marker count
 
 ---
 
@@ -109,7 +109,7 @@ Configuration is stored using `appdirs` in the OS-appropriate config folder:
 
 | OS      | Example Config Location                                                |
 | ------- | ---------------------------------------------------------------------- |
-| Windows | `C:\Users\<username>\AppData\Roaming\OBSMarkers\config.json`           |
+| Windows | `C:\Users\<username>\AppData\Local\OBSMarkers\config.json`           |
 | macOS   | `/Users/<username>/Library/Application Support/OBSMarkers/config.json` |
 | Linux   | `/home/<username>/.config/OBSMarkers/config.json`                      |
 
@@ -118,7 +118,7 @@ Example `config.json`:
 ```json
 {
   "markers": {
-    "last_folder": "C:/Users/sloth/Videos/Markers"
+    "last_folder": "C:/Users/<username>/Videos/Markers"
   },
   "hotkeys": {
     "add_marker": "F8",

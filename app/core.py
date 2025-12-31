@@ -44,20 +44,27 @@ class MarkerApp:
     # ---------------- OBS polling ----------------
     def poll(self):
         if not self.obs.is_connected():
+            was_recording = self.session_active
             self.obs.connect()
+
+            if was_recording and not self.obs.is_connected():
+                self.logger.warning(
+                    "OBS disconnected during recording; ending session"
+                )
+                self._end_session()
+
             self._notify()
             return
 
-        try:
-            status = self.obs.call(self.obs.client.get_record_status)
-        except Exception as e:
-            self.logger.warning("OBS poll failed", exc_info=e)
-            self.obs.mark_disconnected(str(e))
-            self._notify()
-            return
+        status = self.obs.call(self.obs.client.get_record_status)
 
         if status is None:
-            self.logger.debug("OBS not ready yet")
+            if self.session_active:
+                self.logger.warning(
+                    "Lost OBS during recording; ending session"
+                )
+                self._end_session(reason="obs_disconnected")
+
             self._notify()
             return
 
@@ -65,7 +72,6 @@ class MarkerApp:
             self._start_session()
         elif not status.output_active and self.session_active:
             self._end_session()
-
 
 
     # ---------------- Session handlers ----------------
@@ -79,7 +85,7 @@ class MarkerApp:
         
         self._notify()
 
-    def _end_session(self):
+    def _end_session(self, reason="stopped"):
         elapsed = int(time.time() * 1000) - self.start_time
         duration = self.format_elapsed(elapsed)
 
@@ -89,7 +95,8 @@ class MarkerApp:
         self.logger.info(
             "Marker session ended | Duration %s | Markers %d",
             duration,
-            self.marker_count
+            self.marker_count,
+            f"{reason}"
         )
 
         self._notify()

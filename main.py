@@ -3,7 +3,7 @@ import time
 import threading
 from app.logging import setup_logging
 from app.core import MarkerApp
-from app.gui import MarkerGUI
+from app.gui.main_window import MarkerGUI
 from app.hotkeys import Hotkeys
 
 

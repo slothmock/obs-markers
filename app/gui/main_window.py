@@ -56,11 +56,12 @@ class MarkerGUI:
         self.refresh()
         self.tick()
 
-    # ---------------- Menu ----------------
+    # ---------------- Menus ----------------
     def _build_file_menu(self):
         file_menu = tk.Menu(self.menu, tearoff=0)
         file_menu.add_command(label="Select New Folder", command=self.select_directory)
         file_menu.add_separator()
+        file_menu.add_command(label="Settings", command=self.open_settings)
         file_menu.add_command(label="Quit", command=self.root.quit)
         self.menu.add_cascade(label="File", menu=file_menu)
 
@@ -93,6 +94,21 @@ class MarkerGUI:
                             f"{APP_INFO.description}\n"
                             f"Author: {APP_INFO.author}\n"
                             f"Website: {APP_INFO.repo_url}")       
+
+    def open_settings(self):
+        if getattr(self, "_settings_window", None):
+            self._settings_window.lift()
+            return
+
+        from app.gui.settings_window import SettingsWindow
+        self._settings_window = SettingsWindow(
+            parent=self.root,
+            app=self.app,
+            on_close=self._on_settings_closed
+        )
+
+    def _on_settings_closed(self):
+        self._settings_window = None
 
     # ---------- UI refresh ----------
     def schedule_refresh(self):
@@ -137,6 +153,7 @@ class MarkerGUI:
             self.time_var.set("Duration: 00:00:00")
 
         self.root.after(500, self.tick)
+
 
     def run(self):
         self.root.mainloop()

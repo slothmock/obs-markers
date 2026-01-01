@@ -10,9 +10,14 @@ class MarkerApp:
         self.logger = logger
         self.on_state_change = None
 
-        self.config = load_config()
+        self.config = self.ensure_obs_config(load_config())
 
-        self.obs = OBSClient(logger)
+        obs_cfg = self.config["obs"]
+        self.obs = OBSClient(logger=self.logger,
+                             host=obs_cfg['host'],
+                             port=obs_cfg['port'],
+                             password=obs_cfg['password']
+                             )
 
         self.session_active = False
         self.start_time = None
@@ -41,7 +46,7 @@ class MarkerApp:
 
         self._notify()
 
-    # ---------------- OBS polling ----------------
+    # ---------------- OBS Handlers ----------------
     def poll(self):
         if not self.obs.is_connected():
             was_recording = self.session_active
@@ -73,7 +78,21 @@ class MarkerApp:
         elif not status.output_active and self.session_active:
             self._end_session()
 
+    def update_obs_settings(self, host, port, password):
+        self.logger.info("Updating OBS connection settings")
 
+        self.config["obs"].update({
+            "host": host,
+            "port": port,
+            "password": password
+        })
+        save_config(self.config)
+
+        self.obs.update_settings(host, port, password)
+        self.obs.connect()
+
+        self._notify()
+        
     # ---------------- Session handlers ----------------
     def _start_session(self):
         self.session_active = True
@@ -137,4 +156,11 @@ class MarkerApp:
         callback = getattr(self, "on_state_change", None)
         if callback:
             callback()
+
+    def ensure_obs_config(self, config: dict) -> dict:
+        obs_cfg = config.setdefault("obs", {})
+        obs_cfg.setdefault("host", "localhost")
+        obs_cfg.setdefault("port", 4455)
+        obs_cfg.setdefault("password", None)
+        return config
 

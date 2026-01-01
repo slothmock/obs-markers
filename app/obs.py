@@ -21,7 +21,7 @@ class OBSClient:
 
 
     def connect(self):
-        if self.state in (OBSConnectionState.CONNECTED, OBSConnectionState.CONNECTING):
+        if self.state == OBSConnectionState.CONNECTED:
             return
 
         self.logger.info("Attempting OBS connection")
@@ -42,6 +42,20 @@ class OBSClient:
             self.state = OBSConnectionState.DISCONNECTED
             self.last_error = str(e)
             self.logger.warning("OBS connection failed", exc_info=e)
+
+    def disconnect(self, reason: str | None = None):
+        if self.client is None:
+            self.state = OBSConnectionState.DISCONNECTED
+            return
+
+        self.logger.info(
+            "Disconnecting from OBS%s",
+            f": {reason}" if reason else ""
+        )
+
+        self.client = None
+        self.state = OBSConnectionState.DISCONNECTED
+        self.last_error = reason
 
 
     def is_connected(self) -> bool:
@@ -65,5 +79,14 @@ class OBSClient:
             self.state = OBSConnectionState.DISCONNECTED
             self.last_error = str(e)
             return None
+        
+    def update_settings(self, host, port, password):
+        self.logger.info("Updating OBS client settings")
+
+        self.host = host
+        self.port = port
+        self.password = password
+
+        self.disconnect("Connection settings changed")
             
 

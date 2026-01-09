@@ -2,7 +2,7 @@ import os
 import json
 from appdirs import user_config_dir
 
-CONFIG_DIR = user_config_dir("OBSMarkers", "slothmock")
+CONFIG_DIR = user_config_dir("OBSMarkers", False)
 os.makedirs(CONFIG_DIR, exist_ok=True)
 CONFIG_PATH = os.path.join(CONFIG_DIR, "config.json")
 

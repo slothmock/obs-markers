@@ -2,6 +2,7 @@ import time
 
 from app.obs import OBSClient
 from app.markers import MarkerFileManager
+from app.hotkeys import Hotkeys
 from app.config import load_config, save_config
 
 
@@ -11,6 +12,7 @@ class MarkerApp:
         self.on_state_change = None
 
         self.config = self.ensure_obs_config(load_config())
+        self.config.setdefault("hotkeys", Hotkeys.DEFAULTS.copy())
 
         obs_cfg = self.config["obs"]
         self.obs = OBSClient(logger=self.logger,
@@ -18,6 +20,8 @@ class MarkerApp:
                              port=obs_cfg['port'],
                              password=obs_cfg['password']
                              )
+        
+        self.hotkeys = Hotkeys(self)
 
         self.session_active = False
         self.start_time = None

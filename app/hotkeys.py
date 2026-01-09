@@ -1,9 +1,8 @@
-import keyboard
-
 from app.config import load_config, save_config
 
 class Hotkeys:
     DEFAULTS = {
+        "new_file": "F12",
         "add_marker": "F8",
     }
 

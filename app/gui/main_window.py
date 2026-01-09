@@ -123,6 +123,9 @@ class MarkerGUI:
         elif state == OBSConnectionState.CONNECTING:
             self.obs_status_var.set("◐ OBS Connecting…")
             self.obs_status_label.config(fg="orange")
+        elif state == OBSConnectionState.AUTH_ERROR:
+            self.obs_status_var.set("○ OBS Auth Error - Check Settings")
+            self.obs_status_label.config(fg="red")        
         else:
             self.obs_status_var.set("○ OBS Not running")
             self.obs_status_label.config(fg="red")

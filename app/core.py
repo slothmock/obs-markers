@@ -53,10 +53,7 @@ class MarkerApp:
             self.obs.connect()
 
             if was_recording and not self.obs.is_connected():
-                self.logger.warning(
-                    "OBS disconnected during recording; ending session"
-                )
-                self._end_session()
+                self._handle_disconnection()
 
             self._notify()
             return
@@ -65,11 +62,7 @@ class MarkerApp:
 
         if status is None:
             if self.session_active:
-                self.logger.warning(
-                    "Lost OBS during recording; ending session"
-                )
-                self._end_session(reason="obs_disconnected")
-
+                self._handle_disconnection()
             self._notify()
             return
 
@@ -77,6 +70,10 @@ class MarkerApp:
             self._start_session()
         elif not status.output_active and self.session_active:
             self._end_session()
+
+    def _handle_disconnection(self):
+        self.logger.warning("OBS disconnected during recording; ending session")
+        self._end_session(reason="obs_disconnected")
 
     def update_obs_settings(self, host, port, password):
         self.logger.info("Updating OBS connection settings")
@@ -89,6 +86,7 @@ class MarkerApp:
         save_config(self.config)
 
         self.obs.update_settings(host, port, password)
+        self.obs.reset()
         self.obs.connect()
 
         self._notify()
@@ -112,10 +110,7 @@ class MarkerApp:
         self.session_active = False
 
         self.logger.info(
-            "Marker session ended | Duration %s | Markers %d",
-            duration,
-            self.marker_count,
-            f"{reason}"
+            f"Marker session ended | Duration {duration} | Markers {self.marker_count}\nReason: {reason}"
         )
 
         self._notify()

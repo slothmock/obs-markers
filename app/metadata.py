@@ -16,7 +16,7 @@ __version__ = _get_version()
 class AppMetadata:
     name: str = "OBS Markers"
     version: str = __version__
-    author: str = "slothmock"
+    author: str = "Jordan 'sloth' Mock"
     description: str = "Log timestamp markers while recording in OBS."
     repo_url: str = "https://github.com/slothmock/obs-markers"
     license: str = "MIT"

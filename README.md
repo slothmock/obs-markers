@@ -1,67 +1,103 @@
-# OBS Markers 
-![Version](https://img.shields.io/badge/version-0.2.0-blue) ![Python](https://img.shields.io/badge/python-3.11+-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+# OBS Markers
 
-![OBS Markers GUI](docs/gui.png)
+![GitHub Release](https://img.shields.io/github/v/release/slothmock/obs-markers?include_prereleases)
+![Python](https://img.shields.io/badge/python-3.11+-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 
-**OBS Markers** is a lightweight utility for logging timestamp markers while recording with [OBS Studio](https://obsproject.com/). Works with any OBS-supported recording format, automatically tracks recording sessions, writes timestamps to marker files, and provides a simple GUI. 
+<table>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="docs/gui-main.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <strong>OBS WebSocket</strong><br>
+      <img src="docs/gui-settings-obs.png" width="300">
+    </td>
+    <td align="center" width="50%">
+      <strong>Hotkeys</strong><br>
+      <img src="docs/gui-settings-hotkeys.png" width="300">
+    </td>
+  </tr>
+</table>
 
-> ⚠️ **Pre-alpha release: Breaking changes may occur before v1.0.**
+
+
+**OBS Markers** is a lightweight desktop utility for logging timestamp markers while recording with [OBS Studio](https://obsproject.com/).
+
+It automatically detects when OBS starts and stops recording, tracks the session duration, and writes timestamped markers to a text file via configurable hotkeys - making it easy to flag key moments or specific events during long recordings for later editing.
+
+> ⚠️ **Pre-alpha software**
+> The app is stable for daily use but the data format and features may still change before v1.0.
 
 ---
 
 ## Features
 
-- Automatically detects OBS recording start/stop  
-- Logs marker timestamps to a text file per session  
-- Supports recording to any OBS-supported file format while still logging markers  
-- Auto-named marker files with timestamps (`markers_YYYY-MM-DD_HH-MM-SS.txt`)  
-- GUI showing recording status, marker count, and elapsed time  
-- Persistent configuration stored in OS-appropriate directories using `appdirs`  
-- Cross-platform support (Windows, macOS, Linux)  
-- Ready for standalone `.exe` builds via PyInstaller  
+* Automatic detection of OBS recording start and stop
+* One marker file per recording session
+* Instant timestamp markers via hotkey or button
+* Customizable hotkeys via the Settings panel
+* Persistent configuration stored in OS-appropriate locations
+* Clear GUI showing:
+
+  * OBS connection status
+  * Recording status
+  * Elapsed recording time
+  * Active marker file
+  * Marker count
+* Graceful handling when OBS is closed, unavailable, or restarted
+* Standalone Windows `.exe` builds available
 
 ---
 
 ## Installation
 
-### Prerequisites
+### Windows (Recommended)
 
-- Python 3.11+  
-- [OBS Studio](https://obsproject.com/) with **WebSocket 5.x** enabled  
-- Required Python packages:
-
-```bash
-pip install -r requirements.txt
-````
-
-`requirements.txt`:
-
-```
-obsws_python
-keyboard
-appdirs
-```
+Download the latest standalone executable from the [Releases page](https://github.com/slothmock/obs-markers/releases).  
+No Python installation required.
 
 ---
 
-### Clone the repository
+### Running from source (Developers)
+
+#### Prerequisites
+
+* Python **3.11+**
+* [OBS Studio](https://obsproject.com/) with **WebSocket 5.x** enabled
+
+#### Clone the repository
 
 ```bash
 git clone https://github.com/slothmock/obs-markers.git
 cd obs-markers
 ```
 
----
+#### Install dependencies
 
-### Run the app
+```bash
+pip install -r requirements.txt
+```
+
+#### Run the app
 
 ```bash
 python -m app
 ```
 
-* First launch will prompt you to select a folder for marker files
-* The GUI displays OBS connection status, recording status, marker file, elapsed time, and marker count
+---
+
+## First-time Setup
+
+1. Open **OBS Studio**
+2. Enable the WebSocket server
+   (`Tools -> WebSocket Server Settings`)
+3. Launch **OBS Markers**
+4. Select a folder for marker files when prompted (`File -> Select New Folder`)
+5. Start recording in OBS (via UI button or hotkey) - the session will be automatically detected
 
 ---
 
@@ -69,90 +105,108 @@ python -m app
 
 ### Hotkeys
 
-| Action               | Default Hotkey         |
-| -------------------- | ---------------------- |
-| Add Marker           | `F8`                   |
-| Select Marker Folder | `F12`                  |
-| Quit                 | File → Quit |
+Hotkeys are configurable in the menu:  
+**File -> Settings -> Hotkeys**.
 
-> **Note:** Hotkeys are currently fixed but will be customizable in future versions.
+| Action     | Default |
+| ---------- | ------- |
+| New File   | `F12`   |
+| Add Marker | `F8`    |
 
-### GUI
+Changes apply immediately without restarting the app.
 
-* Shows current recording status, marker folder/file, elapsed time, and marker count
-* "Add Marker" button logs a timestamp to the current marker file
-* "File" menu allows selecting marker folder and quitting the app
-* "About" menu shows version and author info
-
-
-## Marker Files
-
-* Stored in the user-selected folder
-* Auto-named format: `markers_YYYY-MM-DD_HH-MM-SS.txt`
-* Session start/end markers are written automatically
-* Manual markers are appended as individual timestamp lines for easy reference
 ---
 
-### example_markers.txt:
+### Marker Files
 
-```
+* Stored in the user-selected folder
+* Automatically named using the recording start time:
+
+  ```
+  markers_YYYY-MM-DD_HH-MM-SS.txt
+  ```
+* Session start and end markers are written automatically
+* Manual markers are appended as timestamps
+
+Example:
+
+```txt
 === SESSION START 2025-12-29 16:29:09 ===
 00:00:08
 00:00:12
 === SESSION END | Duration: 00:00:16 ===
 ```
 
+## Settings
+
+### OBS WebSocket Server
+
+Connection settings can be edited at any time by selecting  
+**File -> Settings -> OBS WebSocket Server**:
+
+* Host
+* Port
+* Password (if enabled)
+
+Changes take effect immediately, with automatic reconnection attempts.
 
 ## Configuration
 
-Configuration is stored using `appdirs` in the OS-appropriate config folder:
+Configuration is stored using `appdirs` in the OS-appropriate config directory.
 
-| OS      | Example Config Location                                                |
-| ------- | ---------------------------------------------------------------------- |
-| Windows | `C:\Users\<username>\AppData\Local\OBSMarkers\config.json`           |
-| macOS   | `/Users/<username>/Library/Application Support/OBSMarkers/config.json` |
-| Linux   | `/home/<username>/.config/OBSMarkers/config.json`                      |
+| OS      | Example path                                           | Tested
+| ------- | ------------------------------------------------------ | ----- 
+| Windows | `C:\Users\<user>\AppData\Local\OBSMarkers\config.json` | [ x ]
+| macOS   | `~/Library/Application Support/OBSMarkers/config.json` | [  ] 
+| Linux   | `~/.config/OBSMarkers/config.json`                     | [  ]
 
-Example `config.json`:
+Example:
 
 ```json
 {
+  "obs": {
+    "host": "localhost",
+    "port": 4455,
+    "password": null
+  },
   "markers": {
-    "last_folder": "C:/Users/<username>/Videos/Markers"
+    "last_folder": "C:/Users/<user>/Videos/Markers"
   },
   "hotkeys": {
-    "add_marker": "F8",
-    "select_folder": "F12"
+    "new_file": "F12",
+    "add_marker": "F8"
   }
 }
 ```
 
----
+## Building the Executable
 
-## Packaging as an EXE
-
-Create a standalone Windows executable using PyInstaller:
+A PyInstaller spec file is included for reproducible builds.
 
 ```bash
 pip install pyinstaller
-pyinstaller --onefile -w main.py
+pyinstaller obs-markers.spec
 ```
 
-* `-w` disables the console window (useful for GUI-only applications)
-* Run PyInstaller in the project root so that relative imports work
+The resulting executable will be placed in the `dist/` directory.
 
----
+
+## Platform Support
+
+* **Windows**: Fully supported and tested
+* **macOS / Linux**: May work when run from source, but not officially supported yet
 
 ## Contributing
 
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/my-feature`)
-3. Commit your changes (`git commit -am 'Add feature'`)
-4. Push to the branch (`git push origin feature/my-feature`)
-5. Open a Pull Request
+Contributions are welcome.
 
----
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Open a Pull Request
+
 
 ## License
 
-MIT License © 2025 Jordan 'sloth' Mock
+MIT License
+© 2025 Jordan “sloth” Mock

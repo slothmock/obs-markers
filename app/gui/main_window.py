@@ -42,7 +42,7 @@ class MarkerGUI:
 
         ttk.Button(
             self.root,
-            text="Add Marker (F8)",
+            text="Add Standard Marker (Note)",
             command=self.app.add_marker
         ).pack(fill="x", padx=8, pady=(6, 2))
 

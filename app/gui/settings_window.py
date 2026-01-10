@@ -50,7 +50,20 @@ class SettingsWindow(tk.Toplevel):
             messagebox.showerror("Invalid settings", "Host or port is invalid.")
             return
 
-        self.app.update_obs_settings(host=host, port=port, password=self.pass_var.get() or None)
+        # Merge changes into OBS config
+        self.app.config["obs"].update({
+            "host": host,
+            "port": port,
+            "password": self.pass_var.get() or None
+        })
+        self.app.config.save()
+
+        self.app.update_obs_settings(
+            host=self.host_var.get().strip(),
+            port=self.port_var.get(),
+            password=self.pass_var.get() or None
+        )
+
         messagebox.showinfo("Settings saved", "OBS WebSocket settings applied successfully.")
 
     def _build_hotkeys_tab(self, notebook):
@@ -61,7 +74,7 @@ class SettingsWindow(tk.Toplevel):
         self.hotkey_labels = {}
 
         for row, (action, key) in enumerate(self.hotkeys.bindings.items()):
-            label = action.replace("_", " ").title()
+            label = action.replace("_", " ").replace("marker_", "").title()
 
             ttk.Label(frame, text=label).grid(
                 row=row, column=0, sticky="w", pady=6
@@ -97,7 +110,6 @@ class SettingsWindow(tk.Toplevel):
             text="Reset to Defaults",
             command=self._reset_hotkeys
         ).grid(row=0, column=0, sticky="e", padx=5)
-
 
 
     def _open_hotkey_dialog(self, action):
@@ -139,26 +151,28 @@ class SettingsWindow(tk.Toplevel):
                 return
 
             self.hotkeys.update_binding(action, new_key)
-            self.hotkey_labels[action].config(text=new_key)
+            self.hotkey_labels[action].config(text=self.hotkeys.bindings[action])
             dialog.destroy()
+
 
         ttk.Button(dialog, text="Apply", command=apply).pack(pady=10)
 
     def _reset_hotkeys(self):
         if not messagebox.askyesno(
             "Confirm Reset",
-            "Reset all hotkeys to defaults?"
+            "Reset all hotkeys to default?"
         ):
             return
 
         for action, key in self.hotkeys.DEFAULTS.items():
             self.hotkeys.update_binding(action, key)
-            self.hotkey_labels[action].config(text=key)
+            self.hotkey_labels[action].config(text=self.hotkeys.bindings[action])
 
         messagebox.showinfo(
             "Hotkeys reset",
-            "All hotkeys have been reset to defaults."
+            "All hotkeys have been reset to default."
         )
+
 
 
     def _close(self):

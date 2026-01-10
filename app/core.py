@@ -3,7 +3,7 @@ import time
 from app.obs import OBSClient
 from app.markers import MarkerFileManager
 from app.hotkeys import Hotkeys
-from app.config import load_config, save_config
+from app.config import OBSMarkerConfig
 
 
 class MarkerApp:
@@ -11,8 +11,16 @@ class MarkerApp:
         self.logger = logger
         self.on_state_change = None
 
-        self.config = self.ensure_obs_config(load_config())
+        self.config = OBSMarkerConfig()
+        self.config.ensure_obs_config()
+        
         self.config.setdefault("hotkeys", Hotkeys.DEFAULTS.copy())
+        self.config.setdefault("marker_types", {
+            "note": "Note",
+            "custom_1": "Custom 1",
+            "custom_2": "Custom 2",
+            "custom_3": "Custom 3",
+        })
 
         obs_cfg = self.config["obs"]
         self.obs = OBSClient(logger=self.logger,
@@ -21,7 +29,7 @@ class MarkerApp:
                              password=obs_cfg['password']
                              )
         
-        self.hotkeys = Hotkeys(self)
+        self.hotkeys = Hotkeys(self, self.config)
 
         self.session_active = False
         self.start_time = None
@@ -43,7 +51,6 @@ class MarkerApp:
         path = self.markers.new_file()
 
         self.config.setdefault("markers", {})["last_folder"] = directory
-        save_config(self.config)
 
         self.logger.info("Marker directory set: %s", directory)
         self.logger.debug("New marker file created: %s", path)
@@ -87,13 +94,14 @@ class MarkerApp:
             "port": port,
             "password": password
         })
-        save_config(self.config)
+        self.config.save()
 
         self.obs.update_settings(host, port, password)
         self.obs.reset()
         self.obs.connect()
 
         self._notify()
+
         
     # ---------------- Session handlers ----------------
     def _start_session(self):
@@ -119,29 +127,29 @@ class MarkerApp:
 
         self._notify()
 
-    # ---------------- Marker ----------------
-    def add_marker(self):
+    def add_marker(self, marker_type="note"):
         if not self.session_active:
-            self.logger.warning(
-                "Marker ignored: recording not active"
-            )
+            self.logger.warning("Marker ignored: recording not active")
             return
 
         elapsed = int(time.time() * 1000) - self.start_time
         timestamp = self.format_elapsed(elapsed)
 
-        self.markers.write(timestamp)
+        label = self.config["marker_types"].get(marker_type, marker_type.title())
+
+        self.markers.write_marker(timestamp, label)
         self.marker_count += 1
 
         self.logger.debug(
-            "Marker added at %s (count=%d)",
+            "Marker added at %s [%s] (count=%d)",
             timestamp,
+            marker_type,
             self.marker_count
         )
 
         self._notify()
 
-    # ---------------- Utils ----------------
+
     @staticmethod
     def format_elapsed(ms: int) -> str:
         total_seconds = int(ms / 1000)
@@ -156,10 +164,5 @@ class MarkerApp:
         if callback:
             callback()
 
-    def ensure_obs_config(self, config: dict) -> dict:
-        obs_cfg = config.setdefault("obs", {})
-        obs_cfg.setdefault("host", "localhost")
-        obs_cfg.setdefault("port", 4455)
-        obs_cfg.setdefault("password", None)
-        return config
+
 

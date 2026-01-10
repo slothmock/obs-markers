@@ -7,12 +7,10 @@ class MarkerFileManager:
         self.base_dir: str | None = None
         self.current_path: str | None = None
 
-    # -------- Directory management --------
     def set_base_dir(self, directory: str):
         self.base_dir = os.path.expanduser(directory)
         os.makedirs(self.base_dir, exist_ok=True)
 
-    # -------- File lifecycle --------
     def new_file(self) -> str:
         if not self.base_dir:
             raise RuntimeError("Marker directory not set")
@@ -27,24 +25,26 @@ class MarkerFileManager:
 
         self.current_path = path
         return path
+    
+    def write_marker(self, timestamp: str, label: str):
+        if not self.current_path:
+            return
 
-    # -------- Writing --------
-    def write(self, line: str):
+        with open(self.current_path, "a", encoding="utf-8") as f:
+            f.write(f"{timestamp} {label}\n")
+
+    def session_start(self):
+        self._write_meta(f"=== SESSION START {time.strftime('%Y-%m-%d %H:%M:%S')} ===")
+
+    def session_end(self, duration: str):
+        self._write_meta(f"=== SESSION END | Duration: {duration} ===")
+
+    def _write_meta(self, line: str):
         if not self.current_path:
             return
 
         with open(self.current_path, "a", encoding="utf-8") as f:
             f.write(line + "\n")
-
-    def session_start(self):
-        self.write(
-            f"=== SESSION START {time.strftime('%Y-%m-%d %H:%M:%S')} ==="
-        )
-
-    def session_end(self, duration: str):
-        self.write(
-            f"=== SESSION END | Duration: {duration} ==="
-        )
 
     @property
     def current_filename(self) -> str | None:

@@ -1,19 +1,15 @@
 import sys, os
 from dataclasses import dataclass
 
-def _get_version() -> str:
-    if getattr(sys, "frozen", False):
-        return os.environ.get("OBS_MARKERS_VERSION", "0.0.0")
-
+def _get_version():
     try:
         from importlib.metadata import version
         return version("obs-markers")
     except Exception:
-        return "0.0.0+unknown"
+        from app.version import __version__
+        return __version__
 
 __version__ = _get_version()
-
-
 
 
 @dataclass(frozen=True)

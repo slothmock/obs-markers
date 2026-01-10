@@ -29,7 +29,7 @@
 
 It automatically detects when OBS starts and stops recording, tracks the session duration, and writes timestamped markers to a text file via configurable hotkeys - making it easy to flag key moments or specific events during long recordings for later editing.
 
-> ⚠️ **Pre-alpha software**
+> ⚠️ **Pre-alpha software**  
 > The app is stable for daily use but the data format and features may still change before v1.0.
 
 ---

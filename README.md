@@ -96,7 +96,7 @@ python -m app
 2. Enable the WebSocket server
    (`Tools -> WebSocket Server Settings`)
 3. Launch **OBS Markers**
-4. Select a folder for marker files when prompted (`File -> Select New Folder`)
+4. Select a folder for marker files (`File -> Select New Folder`)
 5. Start recording in OBS (via UI button or hotkey) - the session will be automatically detected
 
 ---

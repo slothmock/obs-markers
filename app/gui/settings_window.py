@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+from app.gui.utils import center_window
+
 class SettingsWindow(tk.Toplevel):
     def __init__(self, parent, app, on_close):
         super().__init__(parent)
@@ -8,8 +10,10 @@ class SettingsWindow(tk.Toplevel):
         self.on_close = on_close
 
         self.title("Settings")
-        self.geometry("360x240")
+        self.geometry("300x300")
         self.resizable(False, False)
+
+        center_window(self)
 
         self.protocol("WM_DELETE_WINDOW", self._close)
 
@@ -72,22 +76,26 @@ class SettingsWindow(tk.Toplevel):
 
         self.hotkeys = self.app.hotkeys
         self.hotkey_labels = {}
+        self.hotkey_name_labels = {}
 
         for row, (action, key) in enumerate(self.hotkeys.bindings.items()):
-            label = action.replace("_", " ").replace("marker_", "").title()
+            if action == "new_file":
+                name = "New Marker File"
+            else:
+                name = self.hotkeys.get_marker_label(action)
 
-            ttk.Label(frame, text=label).grid(
-                row=row, column=0, sticky="w", pady=6
-            )
+            name_label = ttk.Label(frame, text=name)
+            name_label.grid(row=row, column=0, sticky="w", pady=6)
 
-            value_label = ttk.Label(frame, text=key, width=12, anchor="center")
+            value_label = ttk.Label(frame, text=key, width=12, anchor="e")
             value_label.grid(row=row, column=1, padx=5)
 
+            self.hotkey_name_labels[action] = name_label
             self.hotkey_labels[action] = value_label
 
             ttk.Button(
                 frame,
-                text="Customize",
+                text="Modify",
                 command=lambda a=action: self._open_hotkey_dialog(a)
             ).grid(row=row, column=2, padx=5)
 
@@ -109,71 +117,124 @@ class SettingsWindow(tk.Toplevel):
             buttons,
             text="Reset to Defaults",
             command=self._reset_hotkeys
-        ).grid(row=0, column=0, sticky="e", padx=5)
-
+        ).grid(row=0, column=0, sticky="e", padx=5, pady=5)
 
     def _open_hotkey_dialog(self, action):
+        is_custom = action.startswith("custom_")
+
         dialog = tk.Toplevel(self)
-        dialog.title("Set Hotkey")
-        dialog.geometry("300x140")
+        dialog.title("Modify Hotkey / Label" if is_custom else "Modify Hotkey")
+        dialog.geometry("260x180")
         dialog.resizable(False, False)
         dialog.transient(self)
         dialog.grab_set()
+        center_window(dialog)
 
+
+        container = ttk.Frame(dialog, padding=12)
+        container.pack(fill="both", expand=True)
+
+        # Title
         ttk.Label(
-            dialog,
-            text=f"Press new hotkey for:\n{action.replace('_', ' ').title()}",
-            justify="center"
-        ).pack(pady=10)
+            container,
+            text=action.replace("_", " ").title(),
+            font=("Segoe UI", 11, "bold")
+        ).grid(row=0, column=0, columnspan=2, pady=(0, 12))
 
-        key_var = tk.StringVar(value="Waiting for input…")
+        # Hotkey
+        key_var = tk.StringVar(value=self.hotkeys.bindings[action])
+        key_label = ttk.Label(container, textvariable=key_var, font=("Segoe UI", 10, "bold"))
+        key_label.grid(row=1, column=1, sticky="we", padx=8)
 
-        key_label = ttk.Label(dialog, textvariable=key_var, font=("Segoe UI", 10, "bold"))
-        key_label.pack(pady=5)
+        capture_active = {"on": False}
 
         def on_key(event):
-            parts = []
+            if not capture_active["on"]:
+                return
+            mods = []
             if event.state & 0x0004:
-                parts.append("ctrl")
+                mods.append("ctrl")
             if event.state & 0x0001:
-                parts.append("shift")
+                mods.append("shift")
             if event.state & 0x0008:
-                parts.append("alt")
+                mods.append("alt")
+            mods.append(event.keysym.lower())
+            key_var.set("+".join(mods).upper())
+            capture_active["on"] = False
+            dialog.unbind("<Key>")
 
-            parts.append(event.keysym.lower())
-            key_var.set("+".join(parts).upper())
+        def arm_capture():
+            capture_active["on"] = True
+            key_var.set("Press keys…")
+            dialog.bind("<Key>", on_key)
 
-        dialog.bind("<Key>", on_key)
+        ttk.Button(container, text="Change Key", command=arm_capture, padding=2).grid(
+            row=1, column=0, columnspan=1, pady=6
+        )
 
+        # Custom marker label
+        label_var = None
+        if is_custom:
+            ttk.Label(container, text="Marker Label:").grid(row=3, column=0, sticky="w", pady=2)
+            label_var = tk.StringVar(value=self.hotkeys.get_marker_label(action))
+            ttk.Entry(container, textvariable=label_var, width=24).grid(row=3, column=1, sticky="e", pady=2)
+
+        # -------- Action Buttons --------
+        btn_frame = ttk.Frame(container)
+        btn_frame.grid(row=4, column=0, columnspan=2, pady=(16, 0))
+        
+        ttk.Button(btn_frame, text="Apply", command=lambda: apply()).pack(side="left", padx=6)
+        ttk.Button(btn_frame, text="Cancel", command=dialog.destroy).pack(side="left")
+
+        container.columnconfigure(0, weight=1)
+        container.columnconfigure(1, weight=1)
+
+        # -------- Apply logic --------
         def apply():
             new_key = key_var.get()
-            if "Waiting" in new_key:
-                return
+            if new_key not in ("Press keys…", "", None):
+                self.hotkeys.update_binding(action, new_key)
 
-            self.hotkeys.update_binding(action, new_key)
-            self.hotkey_labels[action].config(text=self.hotkeys.bindings[action])
-            dialog.destroy()
+                if is_custom:
+                    label = label_var.get().strip()
+                    if label:
+                        self.hotkeys.set_marker_label(action, label)
+
+                self.hotkey_labels[action].config(text=new_key)
+                self._refresh_hotkey_labels()
+                dialog.destroy()
 
 
-        ttk.Button(dialog, text="Apply", command=apply).pack(pady=10)
+
+    def _refresh_hotkey_labels(self):
+        for action, key_label in self.hotkey_labels.items():
+            key_label.config(text=self.hotkeys.bindings.get(action, ""))
+
+            if action != "new_file":
+                label = self.hotkeys.get_marker_label(action)
+                self.hotkey_name_labels[action].config(text=label)
 
     def _reset_hotkeys(self):
         if not messagebox.askyesno(
             "Confirm Reset",
-            "Reset all hotkeys to default?"
+            "Reset all hotkeys and marker labels to default?"
         ):
             return
 
-        for action, key in self.hotkeys.DEFAULTS.items():
+        # Reset key bindings
+        for action, key in self.hotkeys.DEFAULT_KEYS.items():
             self.hotkeys.update_binding(action, key)
             self.hotkey_labels[action].config(text=self.hotkeys.bindings[action])
 
+        # Reset marker labels
+        for marker_type, default_label in self.hotkeys.DEFAULT_MARKER_LABELS.items():
+            self.hotkeys.set_marker_label(marker_type, default_label)
+            self.hotkey_name_labels[marker_type].config(text=default_label)
+
         messagebox.showinfo(
             "Hotkeys reset",
-            "All hotkeys have been reset to default."
+            "All hotkeys and marker labels have been reset to default."
         )
-
-
 
     def _close(self):
         self.on_close()

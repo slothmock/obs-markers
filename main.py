@@ -1,7 +1,7 @@
 import threading
 import time
 from app.core import MarkerApp
-from app.gui import MarkerGUI
+from app.gui.main_window import MarkerGUI
 from app.logging import setup_logging
 
 def main():

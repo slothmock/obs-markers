@@ -1,7 +1,7 @@
 import time
 
 from app.obs import OBSClient
-from app.markers import MarkerFileManager
+from app.marker_files import MarkerFileManager
 from app.hotkeys import Hotkeys
 from app.config import OBSMarkerConfig
 
@@ -14,7 +14,7 @@ class MarkerApp:
         self.config = OBSMarkerConfig()
         self.config.ensure_obs_config()
         
-        self.config.setdefault("hotkeys", Hotkeys.DEFAULTS.copy())
+        self.config.setdefault("hotkeys", Hotkeys.DEFAULT_KEYS.copy())
         self.config.setdefault("marker_types", {
             "note": "Note",
             "custom_1": "Custom 1",
@@ -136,6 +136,7 @@ class MarkerApp:
         timestamp = self.format_elapsed(elapsed)
 
         label = self.config["marker_types"].get(marker_type, marker_type.title())
+        label = f"{label.removeprefix('Marker ')}"
 
         self.markers.write_marker(timestamp, label)
         self.marker_count += 1

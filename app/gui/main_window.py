@@ -2,6 +2,7 @@ from time import time
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 
+from app.gui.utils import center_window
 from app.metadata import APP_INFO
 from app.obs import OBSConnectionState
 
@@ -14,6 +15,7 @@ class MarkerGUI:
         self.root = tk.Tk()
         self.root.title(f"{APP_INFO.name} v{APP_INFO.version}")
         self.root.geometry("580x180")
+        self.root.resizable(False, False)
 
         self.menu = tk.Menu(self.root)
         self.root.config(menu=self.menu)
@@ -53,9 +55,11 @@ class MarkerGUI:
         )
         self.obs_status_label.pack(anchor="e", padx=8)
 
+
         self.refresh()
         self.tick()
 
+    
     # ---------------- Menus ----------------
     def _build_file_menu(self):
         file_menu = tk.Menu(self.menu, tearoff=0)

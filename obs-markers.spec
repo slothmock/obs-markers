@@ -22,7 +22,9 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='main',
+    name='OBSMarkers',
+    # TODO: add icon
+    #icon='path/to/icon.ico',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

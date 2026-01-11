@@ -1,35 +1,16 @@
-# OBS Markers
+# OBS Markers 
 
 ![GitHub Release](https://img.shields.io/github/v/release/slothmock/obs-markers?include_prereleases)
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-<table>
-  <tr>
-    <td align="center" colspan="2">
-      <img src="docs/gui-main.png" width="100%">
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="50%">
-      <strong>OBS WebSocket</strong><br>
-      <img src="docs/gui-settings-obs.png" width="300">
-    </td>
-    <td align="center" width="50%">
-      <strong>Hotkeys</strong><br>
-      <img src="docs/gui-settings-hotkeys.png" width="300">
-    </td>
-  </tr>
-</table>
+> ⚠️ Pre-alpha software  
+> The app is stable for daily use but the data format and features may still change before v1.0. Back up important marker files if you rely on them for critical workflows.  
 
-OBS Markers is a lightweight desktop utility for logging timestamp markers while recording with [OBS Studio](https://obsproject.com/).
-
+OBS Markers is a lightweight desktop utility for logging timestamp markers while recording with [OBS Studio](https://obsproject.com/).  
 It automatically detects when OBS starts and stops recording, tracks the session duration, and writes timestamped markers to a text file via configurable hotkeys - making it easy to flag key moments while you record.
 
-> ⚠️ Pre-alpha software  
-> The app is stable for daily use but the data format and features may still change before v1.0. Back up important marker files if you rely on them for critical workflows.
 
----
 
 ## Highlights
 
@@ -37,7 +18,7 @@ It automatically detects when OBS starts and stops recording, tracks the session
 - One marker file per recording session
 - Instant timestamp markers via hotkey or in-app button
 - Customizable hotkeys via the Settings panel
-- Persistent configuration stored in OS-appropriate locations
+- Persistent configuration stored in AppData (Windows)
 - Clear GUI showing:
   - OBS connection status
   - Recording status
@@ -47,7 +28,33 @@ It automatically detects when OBS starts and stops recording, tracks the session
 - Graceful handling when OBS is closed, unavailable, or restarted
 - Standalone Windows `.exe` builds available
 
----
+
+
+
+<table align="center" cellspacing="16">
+  <tr>
+    <td align="center" colspan="2">
+      <img src="docs/gui-main.png" width="80%" alt="Main GUI">
+      <div><strong>Main Application Window</strong></div>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/gui-settings-obs.png" width="80%" alt="OBS WebSocket Settings">
+      <div><strong>OBS WebSocket Settings Panel</strong></div>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/gui-settings-hotkeys.png" width="80%" alt="Hotkey Settings">
+      <div><strong>Hotkey Settings Panel</strong></div>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="docs/gui-settings-hotkey-change.png" width="40%" alt="Hotkey Change Dialog">
+      <div><strong>Modify Hotkey Dialog</strong></div>
+    </td>
+  </tr>
+</table>
 
 ## Quickstart (2 minutes)
 
@@ -60,7 +67,6 @@ It automatically detects when OBS starts and stops recording, tracks the session
 5. Start recording in OBS (UI or hotkey). OBS Markers will detect the session and start a new marker file automatically.
 6. Press the Add Marker hotkey (default `F8`) to append a timestamp, or use the GUI button.
 
----
 
 ## Installation
 
@@ -110,13 +116,16 @@ Notes:
 ### Hotkeys
 Hotkeys are configurable under File → Settings → Hotkeys.
 
-| Action     | Default |
-| ---------- | ------- |
-| New File   | `F12`   |
-| Add Marker | `F8`    |
+| Action       | Default |
+| ------------ | ------- |
+| New File     | F12     |
+| Add Marker   | F8      |
+| Custom 1     | F9      |
+| Custom 2     | F10     |
+| Custom 3     | F11     |
 
-- Hotkeys are global by default (they work even when OBS or other windows are focused).
-- On macOS you may need to grant Accessibility permissions for global hotkeys to work.
+
+- Hotkeys are global (they work even when OBS or other windows are focused).
 - Changes to hotkeys apply immediately - no restart required.
 
 ### Marker Files
@@ -132,14 +141,15 @@ Hotkeys are configurable under File → Settings → Hotkeys.
 Example marker file:
 ```txt
 === SESSION START 2025-12-29 16:29:09 ===
-00:00:08
-00:00:12
-=== SESSION END | Duration: 00:00:16 ===
+00:00:08 Note
+00:00:12 Funny moment
+00:00:20 Custom 2
+=== SESSION END | Duration: 00:00:30 ===
 ```
 
 Marker semantics:
 - Session start/end markers are written automatically.
-- Manual markers append as HH:MM:SS elapsed time from session start.
+- Manual markers append as HH:MM:SS elapsed time from session start + the respective label.
 - If OBS restarts mid-session the file will contain the current session's markers; a new recording after restart will create a new file.
 
 ---
@@ -160,14 +170,23 @@ Example config.json:
   "obs": {
     "host": "localhost",
     "port": 4455,
-    "password": null
-  },
-  "markers": {
-    "last_folder": "C:/Users/<user>/Videos/Markers"
+    "password": "supersecretpass"
   },
   "hotkeys": {
-    "new_file": "F12",
-    "add_marker": "F8"
+    "note": "F8",
+    "custom_1": "F9",
+    "custom_2": "F10",
+    "custom_3": "F11",
+    "new_file": "F12"
+  },
+  "marker_types": {
+    "note": "Note",
+    "custom_1": "Custom 1",
+    "custom_2": "Custom 2",
+    "custom_3": "Custom 3"
+  },
+  "markers": {
+    "last_folder": "D:/OBS Markers/obs-markers/testing"
   }
 }
 ```
@@ -215,11 +234,9 @@ If you still have trouble, please open an issue: [https://github.com/slothmock/o
 ## Roadmap
 
 Planned and possible future work:
-- Per-marker notes and comments
+- ~~Per-marker notes and comments~~
 - CSV/JSON export of marker lists
 - Official macOS and Linux packaging
-- Improved session metadata and customizable filename templates
-- Optional GitHub Actions CI and test coverage badges
 
 See the [Releases page](https://github.com/slothmock/obs-markers/releases) for changelogs and version history. 
 

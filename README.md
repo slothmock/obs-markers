@@ -65,7 +65,7 @@ It automatically detects when OBS starts and stops recording, tracks the session
 3. Launch OBS Markers.
 4. Choose a folder for marker files: File → Select New Folder.
 5. Start recording in OBS (UI or hotkey). OBS Markers will detect the session and start a new marker file automatically.
-6. Press the Add Marker hotkey (default `F8`) to append a timestamp, or use the GUI button.
+6. Press the Add Standard Marker hotkey (default `F8`) to append a timestamp (Note), or use the GUI button.
 
 
 ## Installation
@@ -106,7 +106,9 @@ python -m app
 4. Start recording in OBS. OBS Markers will detect the recording and create a new marker file automatically.
 
 Notes:
-- The default connection is `localhost:4455`. If you change OBS WebSocket host/port or set a password, update File → Settings → OBS WebSocket Server in OBS Markers.
+- The default connection is `localhost:4455`. If you change OBS WebSocket host/port or set a password, they will need to be updated:  
+  `File → Settings → OBS WebSocket Server`  
+
 - If OBS Markers fails to connect, see [Troubleshooting](#troubleshooting) below.
 
 ---

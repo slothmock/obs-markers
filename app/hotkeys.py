@@ -25,7 +25,7 @@ class Hotkeys:
     def _register_hotkeys(self):
         keyboard.unhook_all()
         for action, key in self.bindings.items():
-            keyboard.add_hotkey(key, self._dispatch, args=(action))
+            keyboard.add_hotkey(key, self._dispatch, args=(action,))
 
     def _dispatch(self, action):
         if action == "new_file":

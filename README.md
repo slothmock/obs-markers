@@ -1,4 +1,4 @@
-# OBS Markers 
+# <img src="app/assets/icon.png" width="60" alt="OBSMarkers Logo" style="vertical-align: middle; margin-top: 4; padding-bottom: 10"> OBSMarkers - Your OBS Timestamp Companion 
 
 ![GitHub Release](https://img.shields.io/github/v/release/slothmock/obs-markers?include_prereleases)
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
@@ -7,7 +7,7 @@
 > ⚠️ Pre-alpha software  
 > The app is stable for daily use but the data format and features may still change before v1.0. Back up important marker files if you rely on them for critical workflows.  
 
-OBS Markers is a lightweight desktop utility for logging timestamp markers while recording with [OBS Studio](https://obsproject.com/).  
+OBSMarkers is a lightweight desktop utility for logging timestamp markers while recording with [OBS Studio](https://obsproject.com/).  
 It automatically detects when OBS starts and stops recording, tracks the session duration, and writes timestamped markers to a text file via configurable hotkeys - making it easy to flag key moments while you record.
 
 
@@ -62,10 +62,10 @@ It automatically detects when OBS starts and stops recording, tracks the session
 2. Enable the WebSocket server: Tools → WebSocket Server Settings.
    - OBS WebSocket 5.x is required.
    - The app defaults to host `localhost` and port `4455`.
-3. Launch OBS Markers.
+3. Launch OBSMarkers.
 4. Choose a folder for marker files: File → Select New Folder.
-5. Start recording in OBS (UI or hotkey). OBS Markers will detect the session and start a new marker file automatically.
-6. Press the Add Standard Marker hotkey (default `F8`) to append a timestamp (Note), or use the GUI button.
+5. Start recording in OBS (UI or hotkey). OBSMarkers will detect the session and start a new marker file automatically.
+6. Press the Add Standard Marker hotkey (default `F8`) to append a timestamp (Note) or use the GUI button.
 
 
 ## Installation
@@ -101,15 +101,15 @@ python -m app
 ## First-time Setup
 
 1. Open OBS Studio and enable WebSocket: Tools → WebSocket Server Settings.
-2. Launch OBS Markers.
+2. Launch OBSMarkers.
 3. File → Select New Folder to pick where marker files will be saved.
-4. Start recording in OBS. OBS Markers will detect the recording and create a new marker file automatically.
+4. Start recording in OBS. OBSMarkers will detect the recording and create a new marker file automatically.
 
 Notes:
 - The default connection is `localhost:4455`. If you change OBS WebSocket host/port or set a password, they will need to be updated:  
   `File → Settings → OBS WebSocket Server`  
 
-- If OBS Markers fails to connect, see [Troubleshooting](#troubleshooting) below.
+- If OBSMarkers fails to connect, see [Troubleshooting](#troubleshooting) below.
 
 ---
 
@@ -188,7 +188,7 @@ Example config.json:
     "custom_3": "Custom 3"
   },
   "markers": {
-    "last_folder": "D:/OBS Markers/obs-markers/testing"
+    "last_folder": "D:/OBSMarkers/obs-markers/testing"
   }
 }
 ```
@@ -217,7 +217,7 @@ Common issues and fixes:
 
 - App can't connect to OBS
   - Ensure OBS WebSocket 5.x is installed and enabled.
-  - Confirm host/port/password match between OBS and OBS Markers.
+  - Confirm host/port/password match between OBS and OBSMarkers.
   - If OBS is running on another machine, ensure firewalls allow the connection.
   - Check File → Settings → OBS WebSocket Server to reconfigure connection.
 
@@ -227,7 +227,7 @@ Common issues and fixes:
   - Check for antivirus or indexing services that may block file creation.
     
 - OBS restarted mid-session
-  - OBS Markers will attempt to reconnect. If OBS restarts, a new recording creates a new marker file; markers from the previous session remain intact.
+  - OBSMarkers will attempt to reconnect. If OBS restarts, a new recording creates a new marker file; markers from the previous session remain intact.
 
 If you still have trouble, please open an issue: [https://github.com/slothmock/obs-markers/issues](https://github.com/slothmock/obs-markers/issues)
 

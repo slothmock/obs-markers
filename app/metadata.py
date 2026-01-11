@@ -14,7 +14,7 @@ __version__ = _get_version()
 
 @dataclass(frozen=True)
 class AppMetadata:
-    name: str = "OBS Markers"
+    name: str = "OBSMarkers"
     version: str = __version__
     author: str = "Jordan 'sloth' Mock"
     description: str = "Log timestamp markers while recording in OBS."

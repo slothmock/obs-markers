@@ -23,8 +23,7 @@ exe = EXE(
     a.datas,
     [],
     name='OBSMarkers',
-    # TODO: add icon
-    #icon='path/to/icon.ico',
+    icon='app\\assets\\favicon.ico',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

@@ -1,3 +1,4 @@
+import os
 from time import time
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
@@ -11,8 +12,19 @@ class MarkerGUI:
     def __init__(self, app):
         self.app = app
         self.app.on_state_change = self.schedule_refresh
-
         self.root = tk.Tk()
+
+        icon_path = os.path.join(os.path.dirname(__file__), "..", "assets", "icon.png")
+        icon_path = os.path.abspath(icon_path)
+        app_icon = None
+
+        if os.path.exists(icon_path):
+            app_icon = tk.PhotoImage(file=icon_path)
+
+
+        if app_icon is not None:
+            self.root.iconphoto(True, app_icon)
+
         self.root.title(f"{APP_INFO.name} v{APP_INFO.version}")
         self.root.geometry("580x180")
         self.root.resizable(False, False)
@@ -93,7 +105,7 @@ class MarkerGUI:
             self.refresh()
 
     def show_about(self):
-        messagebox.showinfo("About OBS Markers",
+        messagebox.showinfo("About OBSMarkers",
                             f"{APP_INFO.name} v{APP_INFO.version}\n\n"
                             f"{APP_INFO.description}\n"
                             f"Author: {APP_INFO.author}\n"

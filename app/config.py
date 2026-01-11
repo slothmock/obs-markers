@@ -6,7 +6,7 @@ from appdirs import user_config_dir
 
 class OBSMarkerConfig(MutableMapping):
     def __init__(self, app_name="OBSMarkers"):
-        self.config_dir = user_config_dir(app_name, False)
+        self.config_dir = os.path.join(user_config_dir(app_name), "config")
         os.makedirs(self.config_dir, exist_ok=True)
         self.config_path = os.path.join(self.config_dir, "config.json")
         self._cfg = self._load()

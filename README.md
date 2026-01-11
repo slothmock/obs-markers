@@ -1,4 +1,4 @@
-# <img src="app/assets/icon.png" width="60" alt="OBSMarkers Logo" style="vertical-align: middle;"> OBSMarkers - Your OBS Timestamp Companion 
+# <img src="app/assets/icon.png" width="60" alt="OBSMarkers Logo" style="vertical-align: top;"> OBSMarkers - Your OBS Timestamp Companion 
 
 ![GitHub Release](https://img.shields.io/github/v/release/slothmock/obs-markers?include_prereleases)
 ![Python](https://img.shields.io/badge/python-3.11+-blue)

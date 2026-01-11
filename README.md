@@ -107,7 +107,7 @@ python -m app
 
 Notes:
 - The default connection is `localhost:4455`. If you change OBS WebSocket host/port or set a password, update File → Settings → OBS WebSocket Server in OBS Markers.
-- If OBS Markers fails to connect, see Troubleshooting below.
+- If OBS Markers fails to connect, see [Troubleshooting](#troubleshooting) below.
 
 ---
 

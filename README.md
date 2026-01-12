@@ -1,4 +1,4 @@
-# <img src="app/assets/icon.png" width="60" alt="OBSMarkers Logo" style="vertical-align: top;"> OBSMarkers - Your OBS Timestamp Companion 
+# <img src="app/assets/icon.png" width="60" alt="MarkerMate Logo" style="vertical-align: top;"> MarkerMate - Local Timestamps for Long Recording Sessions 
 
 ![GitHub Release](https://img.shields.io/github/v/release/slothmock/obs-markers?include_prereleases)
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
@@ -7,7 +7,7 @@
 > ⚠️ Pre-alpha software  
 > The app is stable for daily use but the data format and features may still change before v1.0. Back up important marker files if you rely on them for critical workflows.  
 
-OBSMarkers is a lightweight desktop utility for logging timestamp markers while recording with [OBS Studio](https://obsproject.com/).  
+MarkerMate is a lightweight desktop utility for logging timestamp markers while recording with [OBS Studio](https://obsproject.com/).  
 It automatically detects when OBS starts and stops recording, tracks the session duration, and writes timestamped markers to a text file via configurable hotkeys - making it easy to flag key moments while you record.
 
 
@@ -62,9 +62,9 @@ It automatically detects when OBS starts and stops recording, tracks the session
 2. Enable the WebSocket server: Tools → WebSocket Server Settings.
    - OBS WebSocket 5.x is required.
    - The app defaults to host `localhost` and port `4455`.
-3. Launch OBSMarkers.
+3. Launch MarkerMate.
 4. Choose a folder for marker files: File → Select New Folder.
-5. Start recording in OBS (UI or hotkey). OBSMarkers will detect the session and start a new marker file automatically.
+5. Start recording in OBS (UI or hotkey). MarkerMate will detect the session and start a new marker file automatically.
 6. Press the Add Standard Marker hotkey (default `F8`) to append a timestamp (Note) or use the GUI button.
 
 
@@ -101,15 +101,15 @@ python -m app
 ## First-time Setup
 
 1. Open OBS Studio and enable WebSocket: Tools → WebSocket Server Settings.
-2. Launch OBSMarkers.
+2. Launch MarkerMate.
 3. File → Select New Folder to pick where marker files will be saved.
-4. Start recording in OBS. OBSMarkers will detect the recording and create a new marker file automatically.
+4. Start recording in OBS. MarkerMate will detect the recording and create a new marker file automatically.
 
 Notes:
 - The default connection is `localhost:4455`. If you change OBS WebSocket host/port or set a password, they will need to be updated:  
   `File → Settings → OBS WebSocket Server`  
 
-- If OBSMarkers fails to connect, see [Troubleshooting](#troubleshooting) below.
+- If MarkerMate fails to connect, see [Troubleshooting](#troubleshooting) below.
 
 ---
 
@@ -162,9 +162,9 @@ Configuration is stored using `appdirs` in the OS-appropriate config directory.
 
 | OS      | Example path                                           | Tested
 | ------- | ------------------------------------------------------ | ----- 
-| Windows | `C:\Users\<user>\AppData\Local\OBSMarkers\config.json` | [ x ]
-| macOS   | `~/Library/Application Support/OBSMarkers/config.json` | [  ] 
-| Linux   | `~/.config/OBSMarkers/config.json`                     | [  ]
+| Windows | `C:\Users\<user>\AppData\Local\MarkerMate\config.json` | [ x ]
+| macOS   | `~/Library/Application Support/MarkerMate/config.json` | [  ] 
+| Linux   | `~/.config/MarkerMate/config.json`                     | [  ]
 
 Example config.json:
 ```json
@@ -188,7 +188,7 @@ Example config.json:
     "custom_3": "Custom 3"
   },
   "markers": {
-    "last_folder": "D:/OBSMarkers/obs-markers/testing"
+    "last_folder": "D:/MarkerMate/obs-markers/testing"
   }
 }
 ```
@@ -217,7 +217,7 @@ Common issues and fixes:
 
 - App can't connect to OBS
   - Ensure OBS WebSocket 5.x is installed and enabled.
-  - Confirm host/port/password match between OBS and OBSMarkers.
+  - Confirm host/port/password match between OBS and MarkerMate.
   - If OBS is running on another machine, ensure firewalls allow the connection.
   - Check File → Settings → OBS WebSocket Server to reconfigure connection.
 
@@ -227,7 +227,7 @@ Common issues and fixes:
   - Check for antivirus or indexing services that may block file creation.
     
 - OBS restarted mid-session
-  - OBSMarkers will attempt to reconnect. If OBS restarts, a new recording creates a new marker file; markers from the previous session remain intact.
+  - MarkerMate will attempt to reconnect. If OBS restarts, a new recording creates a new marker file; markers from the previous session remain intact.
 
 If you still have trouble, please open an issue: [https://github.com/slothmock/obs-markers/issues](https://github.com/slothmock/obs-markers/issues)
 

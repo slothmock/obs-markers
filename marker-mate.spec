@@ -5,7 +5,8 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[("app/assets/icon.png", "assets")],
+
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -22,7 +23,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='OBSMarkers',
+    name='MarkerMate',
     icon='app\\assets\\favicon.ico',
     debug=False,
     bootloader_ignore_signals=False,

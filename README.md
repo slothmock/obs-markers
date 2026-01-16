@@ -58,11 +58,11 @@ It automatically detects when OBS starts and stops recording, tracks the session
 
 ## Quickstart (2 minutes)
 
-1. Install and open OBS Studio.
+1. Open OBS Studio.
 2. Enable the WebSocket server: Tools → WebSocket Server Settings.
    - OBS WebSocket 5.x is required.
    - The app defaults to host `localhost` and port `4455`.
-3. Launch MarkerMate.
+3. Launch MarkerMate and enter the OBS WebSocket server password. (The "Show Connect Info" button on OBS will show you the password)
 4. Choose a folder for marker files: File → Select New Folder.
 5. Start recording in OBS (UI or hotkey). MarkerMate will detect the session and start a new marker file automatically.
 6. Press the Add Standard Marker hotkey (default `F8`) to append a timestamp (Note) or use the GUI button.
@@ -101,7 +101,7 @@ python -m app
 ## First-time Setup
 
 1. Open OBS Studio and enable WebSocket: Tools → WebSocket Server Settings.
-2. Launch MarkerMate.
+2. Launch MarkerMate and enter the OBS WebSocket server password.
 3. File → Select New Folder to pick where marker files will be saved.
 4. Start recording in OBS. MarkerMate will detect the recording and create a new marker file automatically.
 
@@ -256,6 +256,16 @@ Contributions are welcome.
 If you want a consistent workflow, consider opening an issue first to discuss larger changes. For small fixes or documentation edits, a direct PR is fine.
 
 ---
+
+## Acknowledgements
+
+- Thanks to the developers of the [obsws_python](https://github.com/aatikturk/obsws-python) package for making OBS WebSocket integration accessible.
+
+Whilst developing this app, I didn’t think to check if similar projects existed (my bad).   
+After some research, other wonderful alternatives are available:
+
+- [honganqi’s Local Stream Marker script](https://obsproject.com/forum/resources/local-stream-marker.1457/) - ([GitHub](https://github.com/honganqi/OBS-Local-Stream-Marker))
+- [MMLTech’s Smart Chapters script](https://obsproject.com/forum/resources/smart-chapters.2285/)
 
 ## License
 

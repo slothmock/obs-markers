@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from app.gui.utils import center_window
+from app.utils import center_window
 
 class SettingsWindow(tk.Toplevel):
     def __init__(self, parent, app, on_close):
@@ -27,7 +27,7 @@ class SettingsWindow(tk.Toplevel):
         self._build_hotkeys_tab(notebook)
 
     def _build_ws_tab(self, notebook):
-        frame = ttk.Frame(notebook)
+        frame = ttk.Frame(notebook, padding=5)
         notebook.add(frame, text="OBS WebSocket Server")
 
         ttk.Label(frame, text="Host:").grid(row=0, column=0, sticky="w", pady=5, padx=5)
@@ -71,7 +71,7 @@ class SettingsWindow(tk.Toplevel):
         messagebox.showinfo("Settings saved", "OBS WebSocket settings applied successfully.")
 
     def _build_hotkeys_tab(self, notebook):
-        frame = ttk.Frame(notebook)
+        frame = ttk.Frame(notebook, padding=5)
         notebook.add(frame, text="Hotkeys")
 
         self.hotkeys = self.app.hotkeys

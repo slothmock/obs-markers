@@ -10,7 +10,7 @@ local_scheme = "no-local-version"
 where = ["."]
 
 [project]
-name = "MarkerMate"
+name = "marker-mate"
 dynamic = ["version"]
 description = "Log timestamp markers while recording in OBS"
 authors = [{ name = "slothmock" }]

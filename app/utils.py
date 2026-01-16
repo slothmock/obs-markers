@@ -1,3 +1,14 @@
+import sys, os
+
+def get_asset_path(relative_path: str) -> str:
+    """Get correct path for PyInstaller or normal Python."""
+    if hasattr(sys, "_MEIPASS"):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.dirname(os.path.abspath(__file__))
+
+    return os.path.join(base_path, relative_path)
+
 def center_window(win):
     """
     Centers a Tkinter window on the screen.

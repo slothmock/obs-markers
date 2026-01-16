@@ -6,7 +6,6 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[("app/assets/icon.png", "assets")],
-
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

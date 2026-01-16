@@ -3,7 +3,7 @@ from time import time
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 
-from app.gui.utils import center_window
+from app.utils import center_window, get_asset_path
 from app.metadata import APP_INFO
 from app.obs import OBSConnectionState
 
@@ -14,16 +14,14 @@ class MarkerGUI:
         self.app.on_state_change = self.schedule_refresh
         self.root = tk.Tk()
 
-        icon_path = os.path.join(os.path.dirname(__file__), "..", "assets", "icon.png")
-        icon_path = os.path.abspath(icon_path)
-        app_icon = None
-
-        if os.path.exists(icon_path):
+        try:
+            icon_path = get_asset_path("assets/icon.png")
             app_icon = tk.PhotoImage(file=icon_path)
-
-
-        if app_icon is not None:
             self.root.iconphoto(True, app_icon)
+            self._app_icon = app_icon  # Keep a reference to prevent garbage collection
+        except Exception as e:
+            # Don’t crash the app just because the icon failed
+            self.app.logger.warning(f"Failed to load app icon: {e}")
 
         self.root.title(f"{APP_INFO.name} v{APP_INFO.version}")
         self.root.geometry("580x180")

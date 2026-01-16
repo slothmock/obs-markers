@@ -105,7 +105,7 @@ class MarkerGUI:
             self.refresh()
 
     def show_about(self):
-        messagebox.showinfo("About OBSMarkers",
+        messagebox.showinfo("About MarkerMate",
                             f"{APP_INFO.name} v{APP_INFO.version}\n\n"
                             f"{APP_INFO.description}\n"
                             f"Author: {APP_INFO.author}\n"

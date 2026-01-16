@@ -3,7 +3,7 @@ import logging.handlers
 import os
 from appdirs import user_config_dir
 
-APP_NAME = "OBSMarkers"
+APP_NAME = "MarkerMate"
 
 def setup_logging(debug: bool = False) -> logging.Logger:
     log_dir = os.path.join(user_config_dir(APP_NAME), "logs")

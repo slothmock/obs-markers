@@ -98,9 +98,13 @@ class MarkerGUI:
                            "Stop recording before starting a new marker file.")
             return
 
-        if self.app.markers.base_dir:
-            self.app.markers.new_file()
-            self.refresh()
+        if not self.app.markers.base_dir:
+            messagebox.showwarning("No Marker Folder",
+                           "Select a marker folder before starting a new marker file.")
+            return
+
+        self.app.new_marker_file()
+        self.refresh()
 
     def show_about(self):
         messagebox.showinfo("About MarkerMate",

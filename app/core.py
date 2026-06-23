@@ -48,14 +48,27 @@ class MarkerApp:
     # ---------------- Marker directory ----------------
     def set_marker_directory(self, directory: str):
         self.markers.set_base_dir(directory)
-        path = self.markers.new_file()
 
         self.config.setdefault("markers", {})["last_folder"] = directory
+        self.config.save()
 
         self.logger.info("Marker directory set: %s", directory)
-        self.logger.debug("New marker file created: %s", path)
 
         self._notify()
+
+    def new_marker_file(self) -> str | None:
+        if self.session_active:
+            self.logger.warning("New marker file ignored: recording is active")
+            return None
+
+        if not self.markers.base_dir:
+            self.logger.warning("New marker file ignored: marker directory not set")
+            return None
+
+        path = self.markers.new_file()
+        self.logger.debug("New marker file created: %s", path)
+        self._notify()
+        return path
 
     # ---------------- OBS Handlers ----------------
     def poll(self):
@@ -108,6 +121,11 @@ class MarkerApp:
         self.session_active = True
         self.start_time = int(time.time() * 1000)
         self.marker_count = 0
+
+        if self.markers.base_dir:
+            self.markers.new_file()
+        else:
+            self.logger.warning("Marker session started without a marker directory")
 
         self.markers.session_start()
         self.logger.info("Marker session started")

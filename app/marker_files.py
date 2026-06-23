@@ -19,6 +19,12 @@ class MarkerFileManager:
         filename = f"markers_{ts}.txt"
         path = os.path.join(self.base_dir, filename)
 
+        counter = 2
+        while os.path.exists(path):
+            filename = f"markers_{ts}_{counter}.txt"
+            path = os.path.join(self.base_dir, filename)
+            counter += 1
+
         # Touch file immediately
         with open(path, "a", encoding="utf-8"):
             pass

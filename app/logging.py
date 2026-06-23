@@ -9,7 +9,7 @@ def setup_logging(debug: bool = False) -> logging.Logger:
     log_dir = os.path.join(user_config_dir(APP_NAME), "logs")
     os.makedirs(log_dir, exist_ok=True)
 
-    log_file = os.path.join(log_dir, "obs-markers.log")
+    log_file = os.path.join(log_dir, "marker-mate.log")
 
     logger = logging.getLogger(APP_NAME)
     logger.setLevel(logging.DEBUG if debug else logging.INFO)

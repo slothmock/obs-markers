@@ -1,6 +1,6 @@
 # <img src="app/assets/icon.png" width="60" alt="MarkerMate Logo" style="vertical-align: top;"> MarkerMate - Local Timestamps for Long Recording Sessions 
 
-![GitHub Release](https://img.shields.io/github/v/release/slothmock/obs-markers?include_prereleases)
+![GitHub Release](https://img.shields.io/github/v/release/slothmock/marker-mate?include_prereleases)
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -71,7 +71,7 @@ It automatically detects when OBS starts and stops recording, tracks the session
 ## Installation
 
 ### Windows (Recommended)
-Download the latest standalone executable from the [Releases page](https://github.com/slothmock/obs-markers/releases).  
+Download the latest standalone executable from the [Releases page](https://github.com/slothmock/marker-mate/releases).  
 No Python installation required.
 
 ### Running from source (Developers)
@@ -82,8 +82,8 @@ Prerequisites
 
 Clone the repository:
 ```bash
-git clone https://github.com/slothmock/obs-markers.git
-cd obs-markers
+git clone https://github.com/slothmock/marker-mate.git
+cd marker-mate
 ```
 
 Install dependencies:
@@ -188,7 +188,7 @@ Example config.json:
     "custom_3": "Custom 3"
   },
   "markers": {
-    "last_folder": "D:/MarkerMate/obs-markers/testing"
+    "last_folder": "D:/MarkerMate/marker-mate/testing"
   }
 }
 ```
@@ -204,7 +204,7 @@ A PyInstaller spec file is included for reproducible builds.
 
 ```bash
 pip install pyinstaller
-pyinstaller obs-markers.spec
+pyinstaller marker-mate.spec
 ```
 
 The resulting executable will be placed in the `dist/` directory.
@@ -229,7 +229,7 @@ Common issues and fixes:
 - OBS restarted mid-session
   - MarkerMate will attempt to reconnect. If OBS restarts, a new recording creates a new marker file; markers from the previous session remain intact.
 
-If you still have trouble, please open an issue: [https://github.com/slothmock/obs-markers/issues](https://github.com/slothmock/obs-markers/issues)
+If you still have trouble, please open an issue: [https://github.com/slothmock/marker-mate/issues](https://github.com/slothmock/marker-mate/issues)
 
 ---
 
@@ -240,7 +240,7 @@ Planned and possible future work:
 - CSV/JSON export of marker lists
 - Official macOS and Linux packaging
 
-See the [Releases page](https://github.com/slothmock/obs-markers/releases) for changelogs and version history. 
+See the [Releases page](https://github.com/slothmock/marker-mate/releases) for changelogs and version history. 
 
 ---
 

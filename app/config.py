@@ -1,7 +1,12 @@
 import os
 import json
+import logging
+import time
 from collections.abc import MutableMapping
 from appdirs import user_config_dir
+
+
+logger = logging.getLogger("MarkerMate")
 
 
 class OBSMarkerConfig(MutableMapping):
@@ -32,9 +37,35 @@ class OBSMarkerConfig(MutableMapping):
     # Core methods
     def _load(self) -> dict:
         if os.path.exists(self.config_path):
-            with open(self.config_path, "r", encoding="utf-8") as f:
-                return json.load(f)
+            try:
+                with open(self.config_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+            except json.JSONDecodeError:
+                self._backup_corrupt_config()
+                return {}
+
+            if isinstance(data, dict):
+                return data
+
+            self._backup_corrupt_config()
+            return {}
         return {}
+
+    def _backup_corrupt_config(self):
+        if not os.path.exists(self.config_path):
+            return None
+
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        backup_path = f"{self.config_path}.corrupt-{timestamp}"
+
+        counter = 2
+        while os.path.exists(backup_path):
+            backup_path = f"{self.config_path}.corrupt-{timestamp}-{counter}"
+            counter += 1
+
+        os.replace(self.config_path, backup_path)
+        logger.warning("Invalid config moved to %s; starting with defaults", backup_path)
+        return backup_path
 
     def save(self):
         with open(self.config_path, "w", encoding="utf-8") as f:
